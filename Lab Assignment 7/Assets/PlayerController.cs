@@ -67,4 +67,12 @@ public class PlayerController : MonoBehaviour
             agent.SetDestination(transform.position + new UnityEngine.Vector3(moveDirection.x, 0, moveDirection.z) * 5);
         }
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Player collided with enemy");
+        }
+    }
 }
