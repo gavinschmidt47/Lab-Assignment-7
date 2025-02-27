@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     //Enemy Components
     public NavMeshAgent agent;
+    public GameObject enemy;
 
     //Player variables
     public float speed = 5.0f;
@@ -43,6 +44,8 @@ public class PlayerController : MonoBehaviour
         //Disable the cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        agent.SetDestination(new Vector3(3, 1, 2.15f));
     }
 
     void Update()
@@ -62,7 +65,7 @@ public class PlayerController : MonoBehaviour
         controller.SimpleMove(moveDirection * speed);
 
         // Move the enemy
-        if (agent != null)
+        if (agent != null && (transform.position - enemy.transform.position).magnitude < 15f)
         {
             agent.SetDestination(transform.position + new UnityEngine.Vector3(moveDirection.x, 0, moveDirection.z) * 5);
         }
