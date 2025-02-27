@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using Unity.VisualScripting;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class PlayerController : MonoBehaviour
     //Enemy Components
     public NavMeshAgent agent;
     public GameObject enemy;
+    public Vector3[] waypoints;
+    private int currentWaypoint;
+    private bool patrolRunning; 
 
     //Player variables
     public float speed = 5.0f;
@@ -40,13 +44,16 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("CharacterController component not found on the player.");
         }
-        
+
         //Disable the cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        agent.SetDestination(new Vector3(3, 1, 2.15f));
-    }
+        currentWaypoint = 0;
+        agent.SetDestination(waypoints[currentWaypoint]);
+
+
+}
 
     void Update()
     {
@@ -67,7 +74,21 @@ public class PlayerController : MonoBehaviour
         // Move the enemy
         if (agent != null && (transform.position - enemy.transform.position).magnitude < 15f)
         {
+            patrolRunning = false;
             agent.SetDestination(transform.position + new UnityEngine.Vector3(moveDirection.x, 0, moveDirection.z) * 5);
+        }
+        else
+        {
+            if (patrolRunning)
+            {
+                agent.SetDestination(waypoints[currentWaypoint]);
+                patrolRunning = true;
+            }
+            if(agent.remainingDistance < 0.2f)
+            {
+                MoveToNextPatrolLocation();
+            }
+
         }
     }
 
@@ -78,4 +99,19 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Player collided with enemy");
         }
     }
+
+    public void MoveToNextPatrolLocation()
+    {
+        agent.SetDestination(waypoints[currentWaypoint]);
+        if(currentWaypoint == 3)
+        {
+            currentWaypoint = 0;
+        }
+        else
+        {
+            currentWaypoint++;
+        }
+    }
+
+
 }
